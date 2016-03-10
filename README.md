@@ -23,9 +23,9 @@ Usage and example formatting below, or see the [tests](https://github.com/mapbox
 
 `[w, s, e, n]`: the bounding box for the west (lat val), south (lng val), east (lat val), north (lng val) for the desired area
 
-`x`: longitude coordinate
+`lon`: longitude coordinate (also supports `x` for legacy)
 
-`y`: latitude coordinate
+`lat`: latitude coordinate (also supports `y` for legacy)
 
 `width` and `height`: desired pixel bounds for a map with a center coordinate. Will be multiplied by scale to maintain resolution.
 
@@ -60,8 +60,8 @@ var params = {
 	zoom: {zoom},
 	scale: {scale}
     center: {
-    	x: {x},
-    	y: {y},
+    	lon: {lon},
+    	lat: {lat},
     	w: {width},
     	h: {height}
     },
