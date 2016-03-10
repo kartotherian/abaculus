@@ -87,7 +87,9 @@ describe('create list of tile coordinates', function() {
     it('should return a tiles object with correct coords', function() {
         var zoom = 5,
             scale = 4,
-            center = { x: 4096, y: 4096, w: 1824, h: 1832 };
+            width = 1824,
+            height = 1832,
+            center = { x: 4096, y: 4096, w: width, h: height };
 
         var expectedCoords = {
             tiles: [
@@ -96,7 +98,7 @@ describe('create list of tile coordinates', function() {
                 { z: zoom, x: 16, y: 15, px: 912, py: -108 },
                 { z: zoom, x: 16, y: 16, px: 912, py: 916 }
             ],
-            dimensions: { x: 1824, y: 1832 },
+            dimensions: { x: width, y: height },
             center: { row: 16, column: 16, zoom: zoom },
             scale: scale
         };
@@ -107,7 +109,9 @@ describe('create list of tile coordinates', function() {
     it('should return a tiles object with correct coords when image exceeds y coords', function() {
         var zoom = 2,
             scale = 1,
-            center =  {x: 623, y: 552, w: 1000, h: 1000};
+            width = 1000,
+            height = 1000,
+            center = {x: 623, y: 552, w: width, h: height};
 
         var expectedCoords = {
             tiles: [
@@ -132,8 +136,44 @@ describe('create list of tile coordinates', function() {
                 { z: zoom, x: 0, y: 2, px:  901, py: 460 },
                 { z: zoom, x: 0, y: 3, px:  901, py: 716 }
             ],
-            dimensions: {x: 1000, y: 1000},
+            dimensions: {x: width, y: height},
             center: {row: 2, column: 2, zoom: zoom},
+            scale: scale
+        };
+        var coords = printer.tileList(zoom, scale, center);
+        assert.deepEqual(JSON.stringify(coords), JSON.stringify(expectedCoords));
+    });
+
+    it('should return a tiles object with correct coords when image is much bigger than world', function() {
+        var zoom = 1,
+            scale = 1,
+            width = 2000,
+            height = 2100,
+            center = {x: 100, y: 100, w: width, h: height};
+
+        var expectedCoords = {
+            tiles: [
+                {z: zoom, x: 0, y: 0, px: -124, py: 950},
+                {z: zoom, x: 0, y: 1, px: -124, py: 1206},
+                {z: zoom, x: 1, y: 0, px: 132, py: 950},
+                {z: zoom, x: 1, y: 1, px: 132, py: 1206},
+                {z: zoom, x: 0, y: 0, px: 388, py: 950},
+                {z: zoom, x: 0, y: 1, px: 388, py: 1206},
+                {z: zoom, x: 1, y: 0, px: 644, py: 950},
+                {z: zoom, x: 1, y: 1, px: 644, py: 1206},
+                {z: zoom, x: 0, y: 0, px: 900, py: 950},
+                {z: zoom, x: 0, y: 1, px: 900, py: 1206},
+                {z: zoom, x: 1, y: 0, px: 1156, py: 950},
+                {z: zoom, x: 1, y: 1, px: 1156, py: 1206},
+                {z: zoom, x: 0, y: 0, px: 1412, py: 950},
+                {z: zoom, x: 0, y: 1, px: 1412, py: 1206},
+                {z: zoom, x: 1, y: 0, px: 1668, py: 950},
+                {z: zoom, x: 1, y: 1, px: 1668, py: 1206},
+                {z: zoom, x: 0, y: 0, px: 1924, py: 950},
+                {z: zoom, x: 0, y: 1, px: 1924, py: 1206}
+            ],
+            dimensions: {x: width, y: height},
+            center: {row: 0, column: 0, zoom: zoom},
             scale: scale
         };
         var coords = printer.tileList(zoom, scale, center);
