@@ -21,23 +21,21 @@ var tiles = fs.readdirSync(path.resolve(__dirname + '/fixtures')).reduce(functio
     }, {});
 
 describe('Get center from bbox', function() {
-    it('should fail if (x1, y1) and (x2,y2) are equal', function(done) {
+    it('should fail if (x1, y1) and (x2,y2) are equal', function() {
         var bbox = [0, 0, 0, 0];
 
         assert.throws( function() {
             printer.coordsFromBbox(zoom, scale, bbox, limit);
         }, /Incorrect coordinates/);
-        done();
     });
-    it('should fail if the image is too large', function(done) {
+    it('should fail if the image is too large', function() {
         var bbox = [-60, -60, 60, 60];
 
         assert.throws( function() {
             printer.coordsFromBbox(7, 2, bbox, limit);
         }, /Desired image is too large./);
-        done();
     });
-    it('should return the correct coordinates', function(done) {
+    it('should return the correct coordinates', function() {
         var bbox = [-60, -60, 60, 60];
 
         var center = printer.coordsFromBbox(zoom, scale, bbox, limit);
@@ -45,53 +43,101 @@ describe('Get center from bbox', function() {
         assert.deepEqual(center.h, 13736);
         assert.deepEqual(center.x, x);
         assert.deepEqual(center.y, y);
-        done();
     });
 });
 
 describe('get coordinates from center', function() {
-    it('should should fail if the image is too large', function(done) {
+    it('should should fail if the image is too large', function() {
         var center = {
-            x: 0,
-            y: 0,
+            lon: 0,
+            lat: 0,
             w: 4752,
             h: 4752
         };
         assert.throws( function() {
             printer.coordsFromCenter(zoom, scale, center, limit);
         }, /Desired image is too large./);
-        done();
     });
-    it('should return correct origin coords', function(done) {
+    it('should return correct origin coords', function() {
         var center = {
-            x: 0,
-            y: 20,
+            lon: 0,
+            lat: 20,
             w: 800,
             h: 800
         };
         center = printer.coordsFromCenter(zoom, scale, center, limit);
         assert.equal(center.x, x);
         assert.equal(center.y, 3631);
-        done();
+    });
+    it('should return correct origin coords for negative y (lat)', function() {
+        var zoom = 2,
+            center = {
+                lon: 39,
+                lat: -14,
+                w: 1000,
+                h: 1000
+            };
+        center = printer.coordsFromCenter(zoom, scale, center, limit);
+        assert.equal(center.x, 623);
+        assert.equal(center.y, 552);
     });
 });
 
 describe('create list of tile coordinates', function() {
-    var center =  {x: x, y: y, w: 1824, h: 1832 };
+    it('should return a tiles object with correct coords', function() {
+        var zoom = 5,
+            scale = 4,
+            center = { x: 4096, y: 4096, w: 1824, h: 1832 };
 
-    var expectedCoords = {
-        tiles: [{ z: 5, x: 15, y: 15, px: -112, py: -108 },
-                { z: 5, x: 15, y: 16, px: -112, py: 916 },
-                { z: 5, x: 16, y: 15, px: 912, py: -108 },
-                { z: 5, x: 16, y: 16, px: 912, py: 916 } ],
-        dimensions: { x: 1824, y: 1832 },
-        center: { row: 16, column: 16, zoom: 5 },
-        scale: 4
-    };
-    it('should return a tiles object with correct coords', function(done) {
+        var expectedCoords = {
+            tiles: [
+                { z: zoom, x: 15, y: 15, px: -112, py: -108 },
+                { z: zoom, x: 15, y: 16, px: -112, py: 916 },
+                { z: zoom, x: 16, y: 15, px: 912, py: -108 },
+                { z: zoom, x: 16, y: 16, px: 912, py: 916 }
+            ],
+            dimensions: { x: 1824, y: 1832 },
+            center: { row: 16, column: 16, zoom: zoom },
+            scale: scale
+        };
         var coords = printer.tileList(zoom, scale, center);
         assert.deepEqual(JSON.stringify(coords), JSON.stringify(expectedCoords));
-        done();
+    });
+
+    it('should return a tiles object with correct coords when image exceeds y coords', function() {
+        var zoom = 2,
+            scale = 1,
+            center =  {x: 623, y: 552, w: 1000, h: 1000};
+
+        var expectedCoords = {
+            tiles: [
+                { z: zoom, x: 0, y: 0, px: -123, py: -52 },
+                { z: zoom, x: 0, y: 1, px: -123, py: 204 },
+                { z: zoom, x: 0, y: 2, px: -123, py: 460 },
+                { z: zoom, x: 0, y: 3, px: -123, py: 716 },
+                { z: zoom, x: 1, y: 0, px:  133, py: -52 },
+                { z: zoom, x: 1, y: 1, px:  133, py: 204 },
+                { z: zoom, x: 1, y: 2, px:  133, py: 460 },
+                { z: zoom, x: 1, y: 3, px:  133, py: 716 },
+                { z: zoom, x: 2, y: 0, px:  389, py: -52 },
+                { z: zoom, x: 2, y: 1, px:  389, py: 204 },
+                { z: zoom, x: 2, y: 2, px:  389, py: 460 },
+                { z: zoom, x: 2, y: 3, px:  389, py: 716 },
+                { z: zoom, x: 3, y: 0, px:  645, py: -52 },
+                { z: zoom, x: 3, y: 1, px:  645, py: 204 },
+                { z: zoom, x: 3, y: 2, px:  645, py: 460 },
+                { z: zoom, x: 3, y: 3, px:  645, py: 716 },
+                { z: zoom, x: 0, y: 0, px:  901, py: -52 },
+                { z: zoom, x: 0, y: 1, px:  901, py: 204 },
+                { z: zoom, x: 0, y: 2, px:  901, py: 460 },
+                { z: zoom, x: 0, y: 3, px:  901, py: 716 }
+            ],
+            dimensions: {x: 1000, y: 1000},
+            center: {row: 2, column: 2, zoom: zoom},
+            scale: scale
+        };
+        var coords = printer.tileList(zoom, scale, center);
+        assert.deepEqual(JSON.stringify(coords), JSON.stringify(expectedCoords));
     });
 });
 

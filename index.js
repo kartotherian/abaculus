@@ -55,14 +55,18 @@ abaculus.coordsFromBbox = function(z, s, bbox, limit) {
 };
 
 abaculus.coordsFromCenter = function(z, s, center, limit) {
-    var origin = sm.px([center.x, center.y], z);
-    center.x = origin[0];
-    center.y = origin[1];
-    center.w = Math.round(center.w * s);
-    center.h = Math.round(center.h * s);
-
-    if (center.w >= limit || center.h >= limit) throw new Error('Desired image is too large.');
-    return center;
+    // support legacy parameters - lon used to be x, lat used to be y
+    var lon = (center.x === undefined ? center.lon : center.x),
+        lat = (center.y === undefined ? center.lat : center.y),
+        origin = sm.px([lon, lat], z),
+        result = {
+            x: origin[0],
+            y: origin[1],
+            w: Math.round(center.w * s),
+            h: Math.round(center.h * s)
+        };
+    if (result.w >= limit || result.h >= limit) throw new Error('Desired image is too large.');
+    return result;
 };
 
 // Generate the zxy and px/py offsets needed for each tile in a static image.
@@ -105,7 +109,7 @@ abaculus.tileList = function(z, s, center) {
         return {
             row: Math.floor(obj.row),
             column: Math.floor(obj.column),
-            zoom: Math.floor(obj.zoom)
+            zoom: obj.zoom
         };
     }
 
@@ -129,7 +133,7 @@ abaculus.tileList = function(z, s, center) {
                 ? maxTilesInRow + c.column
                 : c.column % maxTilesInRow;
 
-            if (c.row < 0) continue;
+            if (c.row < 0 || c.row >= maxTilesInRow) continue;
             coords.tiles.push({
                 z: c.zoom,
                 x: c.column,
