@@ -40,16 +40,16 @@ Usage and example formatting below, or see the [tests](https://github.com/mapbox
 ```javascript
 // Calculate image bounds from W,S,E,N bounding box.
 var params = {
-	zoom: {zoom},
-	scale: {scale}
+    zoom: {zoom},
+    scale: {scale}
     bbox: [{w}, {s}, {e}, {n}],
     format: {format},
     quality: {quality},
     getTile: function(z,x,y, callback){
-    			// do something
-			    return callback(null, buffer, headers);
-			},
-	limit: {limit}
+                // do something
+                return callback(null, buffer, headers);
+            },
+    limit: {limit}
 };
 ```
 or
@@ -57,21 +57,21 @@ or
 // Calculate image bounds from center lng,lat coordinates and
 // pixel dimensions of final image (will be multipled by scale).
 var params = {
-	zoom: {zoom},
-	scale: {scale}
+    zoom: {zoom},
+    scale: {scale}
     center: {
-    	lon: {lon},
-    	lat: {lat},
-    	w: {width},
-    	h: {height}
+        lon: {lon},
+        lat: {lat},
+        w: {width},
+        h: {height}
     },
     format: {format},
     quality: {quality},
     getTile: function(z,x,y, callback){
-    			// do something
-			    return callback(null, buffer, headers);
-			},
-	limit: {limit}
+                // do something
+                return callback(null, buffer, headers);
+            },
+    limit: {limit}
 };
 ```
 #### usage:
@@ -79,7 +79,7 @@ var params = {
 abaculus(params, function(err, image, headers){
        if (err) return err;
        // do something with image
-	});
+    });
 ```
 
 #### output:
